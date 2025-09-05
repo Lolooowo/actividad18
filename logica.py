@@ -17,10 +17,10 @@ class BandaEscolar(Participante):
         return self._puntaje
 
     @categoria.setter
-    def categoria(self,nuevaCategoria):
+    def categoria(self,nuevacategoria):
         categorias=["primaria", "basico", "diversificado", "básico"]
-        if nuevaCategoria.lower() in categorias:
-            self._categoria = nuevaCategoria
+        if nuevacategoria.lower() in categorias:
+            self._categoria = nuevacategoria
         else:
             print("Categoria no valida")
 
