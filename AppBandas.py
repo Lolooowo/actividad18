@@ -3,17 +3,17 @@ from tkinter import messagebox
 
 
 class Participante:
-    def __init__(self, nombre, insitucion):
+    def __init__(self, nombre, institucion):
         self.nombre = nombre
-        self.insitucion = insitucion
+        self.institucion = institucion
 
     def mostrar_informacion(self):
-        print(f"Nombre: {self.nombre}, insitucion: {self.insitucion}")
+        print(f"Nombre: {self.nombre}, insitucion: {self.institucion}")
 
 
 class BandaEscolar(Participante):
-    def __init__(self, nombre, insitucion, categoria):
-        super().__init__(nombre, insitucion)
+    def __init__(self, nombre, institucion, categoria):
+        super().__init__(nombre, institucion)
         self.categoria = categoria
         self.puntaje = {}
 
@@ -123,7 +123,15 @@ class ConcursoBandasApp:
 
     def listar_bandas(self):
         print("Se abrió la ventana: Listado de Bandas")
-        tk.Toplevel(self.ventana).title("Listado de Bandas")
+        ventana_lista=tk.Tk()
+        ventana_lista.title("Listado de Bandas")
+        ventana_lista.geometry("400x300")
+
+        titulo = tk.Label(ventana_lista, text="Bandas inscritas en el concurso", font=("Arial", 16, "bold"))
+        titulo.grid(row=0, column=3, pady=5)
+        for x in range(len(self.Bandas)):
+            banda = tk.Label(ventana_lista, text=f"{x+1}. Nombre: {self.Bandas[x].nombre} - Categoria: {self.Bandas[x].categoria} - Institucion: {self.Bandas[x].institucion}", font=("Arial", 12))
+            banda.grid(row=x+1, column=2, pady=3)
 
     def ver_ranking(self):
         print("Se abrió la ventana: Ranking Final")
@@ -195,9 +203,28 @@ class ConcursoBandasApp:
         else:
             messagebox.showerror("Error", "La calificacion en *Ritmo* no puede ser negativa, ni mayor a 10")
         x.destroy()
-class Concurso:
-    def __init__(self,nombre):
-        self.nombre = nombre
-        self.bandas=[]
+    def ordenar_bandas(self, lista):
+        if len(lista) <=1:
+            return lista
+        else:
+            pivote = lista[0]
+            menores = [x for x in lista[1:] if x.puntajes["promedio"]<pivote.puntajes["promedio"] ]
+            iguales = [x for x in lista if x.puntajes["promedio"] == pivote.puntajes["promedio"]]
+            mayores = [x for x in lista[1:] if x.puntajes["promedio"]>pivote.puntajes["promedio"]]
+            return self.ordenar_bandas(mayores) + iguales+ self.ordenar_bandas(menores)
+#class Concurso:
+#    def __init__(self,nombre):
+ #       self.nombre = nombre
+  #      self.bandas_ordenadas=[]
+   # def ordenar_bandas(self, lista):
+    #    if len(lista) <=1:
+     #       return lista
+      #  else:
+       #     pivote = lista[0]
+        #    menores = [x for x in lista[1:] if x.puntajes["promedio"]<pivote.puntajes["promedio"] ]
+         #   iguales = [x for x in lista if x.puntajes["promedio"] == pivote.puntajes["promedio"]]
+          #  mayores = [x for x in lista[1:] if x.puntajes["promedio"]>pivote.puntajes["promedio"]]
+           # return self.ordenar_bandas(mayores) + iguales+ self.ordenar_bandas(menores)
+
 if __name__ == "__main__":
     ConcursoBandasApp()
