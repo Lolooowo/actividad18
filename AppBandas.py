@@ -17,31 +17,7 @@ class BandaEscolar(Participante):
         self.categoria = categoria
         self.puntaje = {}
 
-    @property
-    def categoria(self):
-        return self._categoria
 
-    @categoria.setter
-    def categoria(self, nuevacategoria):
-        categorias = ["primaria", "basico", "diversificado", "básico"]
-        if nuevacategoria.lower() in categorias:
-            self._categoria = nuevacategoria
-        else:
-            messagebox.showerror("Error", "Categoria incorrecta")
-
-    @property
-    def puntaje(self):
-        return self.puntaje
-
-    @puntaje.setter
-    def puntaje(self, nuevapuntaje):
-        for clave, valor in nuevapuntaje.items():
-            if valor == "":
-                print("Puntaje no se puede dejar en blanco")
-            elif valor < 0:
-                print("El puntaje no puede ser negativo")
-            else:
-                self.puntaje = valor
 
 
 class ConcursoBandasApp:
@@ -75,13 +51,15 @@ class ConcursoBandasApp:
     def buscar(self, nombre):
         for banda in self.Bandas:
             if banda.nombre.lower() == nombre.lower():
-                messagebox.showinfo("Banda encontrada", f"Banda inscrita, se les asignará la evaluacion a la banda {banda.nombre}")
+                messagebox.showinfo("Banda encontrada", f"Banda inscrita, se les asignará la evaluacion a la banda:"
+                                                        f"\n Nombre: {banda.nombre}, Institución: {banda.insitucion}, Categoria: {banda.categoria}")
             else:
                 messagebox.showerror("Error", "No existe una banda con ese nombre")
     def ventana_inscribir_banda(self):
         print("Se abrió la ventana: Inscribir Banda")
         ventana_inscribir = tk.Tk()
         ventana_inscribir.title("Inscribir Banda")
+
 
         ventana_inscribir.geometry("700x300")
         titulo = tk.Label(ventana_inscribir, text="Inscribir Banda", font=("Arial", 16, "bold"))
@@ -107,18 +85,41 @@ class ConcursoBandasApp:
         print("Se abrió la ventana: Registrar Evaluación")
         ventana_evaluacion = tk.Tk()
         ventana_evaluacion.title("Registrar Evaluación")
-        ventana_evaluacion.geometry("700x300")
+        ventana_evaluacion.geometry("800x400")
 
         titulo = tk.Label(ventana_evaluacion, text="Registrar Evaluación", font=("Arial", 16, "bold"))
         buscar = tk.Label(ventana_evaluacion, text="Ingrese el nombre de la banda a evaluar: ", font=("Arial", 12))
         entrada_buscar = tk.Entry(ventana_evaluacion, font=("Arial", 12))
         boton_buscar = tk.Button(ventana_evaluacion, text="BUSCAR", font=("Arial", 12), command= lambda: self.buscar(entrada_buscar.get()))
+        titulo_evaluacion = tk.Label(ventana_evaluacion, text=f"Ingrese la evaluacion de la banda: {entrada_buscar.get()}", font=("Arial", 16, "bold"))
+        ritmo = tk.Label(ventana_evaluacion, text="Ritmo: ", font=("Arial", 12))
+        ritmo_entrada = tk.Entry(ventana_evaluacion, font=("Arial", 12))
+        uniformidad = tk.Label(ventana_evaluacion, text="Uniformidad: ", font=("Arial", 12))
+        uniformidad_entrada = tk.Entry(ventana_evaluacion, font=("Arial", 12))
+        coreografia = tk.Label(ventana_evaluacion, text="Coreografia: ", font=("Arial", 12))
+        coreografia_entrada = tk.Entry(ventana_evaluacion, font=("Arial", 12))
+        alineacion = tk.Label(ventana_evaluacion, text="Alineacion: ", font=("Arial", 12))
+        alineacion_entrada = tk.Entry(ventana_evaluacion, font=("Arial", 12))
+        puntualidad = tk.Label(ventana_evaluacion, text="Puntualidad: ", font=("Arial", 12))
+        puntualidad_entrada = tk.Entry(ventana_evaluacion, font=("Arial", 12))
+        puntuacion = tk.Button(ventana_evaluacion, text="ENVIAR EVALUACION", command=lambda: self.evaluacion(entrada_buscar.get(),ritmo_entrada.get(),uniformidad_entrada.get(), coreografia_entrada.get(),alineacion_entrada.get(), puntualidad_entrada.get()))
 
         titulo.grid(row=0, column=3 ,pady=5)
         buscar.grid(row=1, column=2, pady=5)
         entrada_buscar.grid(row=1, column=3, pady=5)
         boton_buscar.grid(row=1, column=4, pady=5)
-
+        titulo_evaluacion.grid(row=2, column=3, pady=5)
+        ritmo.grid(row=3, column=2, pady=5)
+        ritmo_entrada.grid(row=3, column=3, pady=5)
+        uniformidad.grid(row=4, column=2, pady=5)
+        uniformidad_entrada.grid(row=4, column=3, pady=5)
+        coreografia.grid(row=5, column=2, pady=5)
+        coreografia_entrada.grid(row=5, column=3, pady=5)
+        alineacion.grid(row=6, column=2, pady=5)
+        alineacion_entrada.grid(row=6, column=3, pady=5)
+        puntualidad.grid(row=7, column=2, pady=5)
+        puntualidad_entrada.grid(row=7, column=3, pady=5)
+        puntuacion.grid(row=8, column=3, pady=10)
 
     def listar_bandas(self):
         print("Se abrió la ventana: Listado de Bandas")
@@ -132,11 +133,71 @@ class ConcursoBandasApp:
         print("Inscribiendo Banda")
         x=tk.Tk()
         x.title("Inscribiendo Banda")
-        nuevaBanda= BandaEscolar(nombre,insti,categoria)
-        self.Bandas.append(nuevaBanda)
-        for banda in self.Bandas:
-            print(banda.nombre)
-        messagebox.showinfo("Inscripción", "Banda Inscrita")
+        categorias = ["primaria", "basico", "diversificado", "básico"]
+        if len(self.Bandas)>0:
+            for banda in self.Bandas:
+                if banda.nombre.lower() == nombre.lower():
+                    messagebox.showerror("Error", "Banda ya existe. No pueden haber 2 bandas con el mismo nombre")
+                    print("a")
+                else:
+                    if categoria.lower() in categorias:
+                        nueva_banda= BandaEscolar(nombre,insti,categoria)
+                        self.Bandas.append(nueva_banda)
+                        messagebox.showinfo("Inscribiendo Banda", "Banda inscrita")
+                    else:
+                        messagebox.showerror("Error", "Error en la categoria")
+        else:
+            if categoria.lower() in categorias:
+                nueva_banda = BandaEscolar(nombre, insti, categoria)
+                self.Bandas.append(nueva_banda)
+                messagebox.showinfo("Inscribiendo Banda", "Banda inscrita")
+            else:
+                messagebox.showerror("Error", "Error en la categoria")
         x.destroy()
+
+    def evaluacion(self,nombre, ritmo, uniformidad, coreografia, alineacion, puntuacion):
+        x=tk.Tk()
+        x.title("Evaluacion")
+        ritmo = float(ritmo)
+        uniformidad = float(uniformidad)
+        coreografia = float(coreografia)
+        alineacion = float(alineacion)
+        puntuacion = float(puntuacion)
+        if 0 < ritmo < 10:
+            if 0<uniformidad < 10:
+                if 0<coreografia < 10:
+                    if 0<alineacion < 10:
+                        if 0<puntuacion < 10:
+                            total = ritmo+uniformidad+coreografia+alineacion+puntuacion
+                            promedio = total/5
+                            if len(self.Bandas)>0:
+                                for banda in self.Bandas:
+                                    if banda.nombre.lower() == nombre.lower():
+                                        banda.puntaje={
+                                            "ritmo": ritmo,
+                                            "uniformidad": uniformidad,
+                                            "coreografia": coreografia,
+                                            "alineacion": alineacion,
+                                            "puntuacion": puntuacion,
+                                            "total": total,
+                                            "promedio": promedio
+                                        }
+                                    messagebox.showinfo("Evaluacion",
+                                                f"Se ha registrado la evaluación correctamente para\nla banda: {banda.nombre}")
+                        else:
+                            messagebox.showerror("Error", "La calificacion en *Puntualidad* no puede ser negativa, ni mayor a 10")
+                    else:
+                        messagebox.showerror("Error", "La calificacion en *Alineacion* no puede ser negativa, ni mayor a 10")
+                else:
+                    messagebox.showerror("Error", "La calificacion en *Coreografia* no puede ser negativa, ni mayor a 10")
+            else:
+                messagebox.showerror("Error", "La calificacion en *Uniformidad* no puede ser negativa, ni mayor a 10")
+        else:
+            messagebox.showerror("Error", "La calificacion en *Ritmo* no puede ser negativa, ni mayor a 10")
+        x.destroy()
+class Concurso:
+    def __init__(self,nombre):
+        self.nombre = nombre
+        self.bandas=[]
 if __name__ == "__main__":
     ConcursoBandasApp()
