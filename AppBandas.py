@@ -49,12 +49,14 @@ class ConcursoBandasApp:
         barra.add_cascade(label="Opciones", menu=opciones)
         self.ventana.config(menu=barra)
     def buscar(self, nombre):
+        cont = 0
         for banda in self.Bandas:
             if banda.nombre.lower() == nombre.lower():
                 messagebox.showinfo("Banda encontrada", f"Banda inscrita, se les asignará la evaluacion a la banda:"
-                                                        f"\n Nombre: {banda.nombre}, Institución: {banda.insitucion}, Categoria: {banda.categoria}")
-            else:
-                messagebox.showerror("Error", "No existe una banda con ese nombre")
+                                                        f"\n Nombre: {banda.nombre}, Institución: {banda.institucion}, Categoria: {banda.categoria}")
+                cont=1
+        if cont==0:
+            messagebox.showerror("Error", "No existe una banda con ese nombre")
     def ventana_inscribir_banda(self):
         print("Se abrió la ventana: Inscribir Banda")
         ventana_inscribir = tk.Tk()
@@ -125,42 +127,53 @@ class ConcursoBandasApp:
         print("Se abrió la ventana: Listado de Bandas")
         ventana_lista=tk.Tk()
         ventana_lista.title("Listado de Bandas")
-        ventana_lista.geometry("400x300")
+        ventana_lista.geometry("700x300")
 
         titulo = tk.Label(ventana_lista, text="Bandas inscritas en el concurso", font=("Arial", 16, "bold"))
-        titulo.grid(row=0, column=3, pady=5)
+        titulo.grid(row=0, column=2, pady=5)
         for x in range(len(self.Bandas)):
             banda = tk.Label(ventana_lista, text=f"{x+1}. Nombre: {self.Bandas[x].nombre} - Categoria: {self.Bandas[x].categoria} - Institucion: {self.Bandas[x].institucion}", font=("Arial", 12))
             banda.grid(row=x+1, column=2, pady=3)
 
     def ver_ranking(self):
         print("Se abrió la ventana: Ranking Final")
-        tk.Toplevel(self.ventana).title("Ranking Final")
+        ventana_ranking=tk.Tk()
+        ventana_ranking.title("Ranking Final")
+        ventana_ranking.geometry("700x300")
+        ranking = self.ordenar_bandas(self.Bandas)
+        titulo = tk.Label(ventana_ranking, text="Ranking Final", font=("Arial", 16, "bold"))
+        titulo.grid(row=0, column=2, pady=5)
+        x=1
+        for banda in ranking:
+            label_banda= tk.Label(ventana_ranking,text=f"1. {banda.nombre} con un promedio de: {banda.puntaje["promedio"]}.", font=("Arial", 12))
+            label_banda.grid(row=x, pady=5)
+            x= x+1
 
     def inscribir_banda(self, nombre, insti, categoria):
         print("Inscribiendo Banda")
         x=tk.Tk()
         x.title("Inscribiendo Banda")
         categorias = ["primaria", "basico", "diversificado", "básico"]
-        if len(self.Bandas)>0:
-            for banda in self.Bandas:
-                if banda.nombre.lower() == nombre.lower():
-                    messagebox.showerror("Error", "Banda ya existe. No pueden haber 2 bandas con el mismo nombre")
-                    print("a")
-                else:
-                    if categoria.lower() in categorias:
-                        nueva_banda= BandaEscolar(nombre,insti,categoria)
-                        self.Bandas.append(nueva_banda)
-                        messagebox.showinfo("Inscribiendo Banda", "Banda inscrita")
-                    else:
-                        messagebox.showerror("Error", "Error en la categoria")
-        else:
+        if len(self.Bandas)==0:
             if categoria.lower() in categorias:
-                nueva_banda = BandaEscolar(nombre, insti, categoria)
+                nueva_banda= BandaEscolar(nombre,insti,categoria)
                 self.Bandas.append(nueva_banda)
                 messagebox.showinfo("Inscribiendo Banda", "Banda inscrita")
             else:
                 messagebox.showerror("Error", "Error en la categoria")
+        else:
+            cont=0
+            for banda in self.Bandas:
+                if banda.nombre.lower() == nombre.lower():
+                    messagebox.showerror("Error", "Banda ya existe. No pueden haber 2 bandas con el mismo nombre")
+                    cont=1
+            if cont==0:
+                if categoria.lower() in categorias:
+                    nueva_banda = BandaEscolar(nombre, insti, categoria)
+                    self.Bandas.append(nueva_banda)
+                    messagebox.showinfo("Inscribiendo Banda", "Banda inscrita")
+                else:
+                    messagebox.showerror("Error", "Error en la categoria")
         x.destroy()
 
     def evaluacion(self,nombre, ritmo, uniformidad, coreografia, alineacion, puntuacion):
@@ -181,7 +194,7 @@ class ConcursoBandasApp:
                             if len(self.Bandas)>0:
                                 for banda in self.Bandas:
                                     if banda.nombre.lower() == nombre.lower():
-                                        banda.puntaje={
+                                        banda.puntaje = {
                                             "ritmo": ritmo,
                                             "uniformidad": uniformidad,
                                             "coreografia": coreografia,
@@ -190,8 +203,8 @@ class ConcursoBandasApp:
                                             "total": total,
                                             "promedio": promedio
                                         }
-                                    messagebox.showinfo("Evaluacion",
-                                                f"Se ha registrado la evaluación correctamente para\nla banda: {banda.nombre}")
+                                messagebox.showinfo("Evaluacion",
+                                                f"Se ha registrado la evaluación correctamente para\nla banda: {nombre}")
                         else:
                             messagebox.showerror("Error", "La calificacion en *Puntualidad* no puede ser negativa, ni mayor a 10")
                     else:
@@ -208,9 +221,9 @@ class ConcursoBandasApp:
             return lista
         else:
             pivote = lista[0]
-            menores = [x for x in lista[1:] if x.puntajes["promedio"]<pivote.puntajes["promedio"] ]
-            iguales = [x for x in lista if x.puntajes["promedio"] == pivote.puntajes["promedio"]]
-            mayores = [x for x in lista[1:] if x.puntajes["promedio"]>pivote.puntajes["promedio"]]
+            menores = [x for x in lista[1:] if x.puntaje["promedio"]<pivote.puntaje["promedio"] ]
+            iguales = [x for x in lista if x.puntaje["promedio"] == pivote.puntaje["promedio"]]
+            mayores = [x for x in lista[1:] if x.puntaje["promedio"]>pivote.puntaje["promedio"]]
             return self.ordenar_bandas(mayores) + iguales+ self.ordenar_bandas(menores)
 #class Concurso:
 #    def __init__(self,nombre):
